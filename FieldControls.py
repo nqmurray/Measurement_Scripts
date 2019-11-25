@@ -9,7 +9,9 @@ Neuromancer = {
     'Hx Dac': 'dac3',
     'Hx Conversion': 393.5,
     'Hz Dac': 'dac2',
-    'Hz Conversion': 1234
+    'Hz Conversion': 1234,
+    'Hx Max': 10000,
+    'Hz Max': 10000
 }
 
 SCREAM = {

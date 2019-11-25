@@ -3,8 +3,8 @@ import sys
 import time
 import importlib
 import matplotlib.animation as animation
-from GUIBaseClass_V2 import GUIBase
-from GUIBaseClass_V2 import animate_plot
+from GUIBaseClass import GUIBase
+from GUIBaseClass import animate_plot
 
 sys.path.append(os.getcwd())  # add path to import dictionary
 mag = importlib.import_module('FieldControls',
@@ -108,7 +108,9 @@ def main():  # test version of the GUI_base and animation
         'Hx Dac': mag_settings['Hx Dac'],
         'Hz Dac': mag_settings['Hz Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
-        'Hz Conversion': mag_settings['Hz Conversion']
+        'Hz Conversion': mag_settings['Hz Conversion'],
+        'Hx Max': mag_settings['Hx Conversion'],
+        'Hz Max': mag_settings['Hz Conversion']
     }
 
     """

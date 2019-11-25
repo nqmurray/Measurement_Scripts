@@ -1,11 +1,11 @@
 import os
 import time
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter import filedialog
-import multiprocessing as mp
 import matplotlib
+import multiprocessing as mp
 from random import randint
 from pymeasure import instruments
 from MeasurementClass import Measurement
@@ -392,9 +392,13 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
             elif 'Hz Dac' in key:
                 z_dac = value.get()
             elif 'Hx Conversion' in key:
-                x_con = value.get()
+                x_con = float(value.get())
             elif 'Hz Conversion' in key:
-                z_con = value.get()
+                z_con = float(value.get())
+            elif 'Hz Max' in key:
+                z_lim = float(value.get())
+            elif 'Hx Max' in key:
+                x_lim = float(value.get())
             else:
                 pass
 
@@ -453,19 +457,19 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
             self.datalog.insert(
                 'end', 'Output %s direction field for %s seconds' % (output_direction.get(), ot_ent.get()))
             if output_direction.get() == 'z':
-                if float(s_ent.get()) / float(z_con) <= z_lim:
-                    setattr(lockin, 'dac%s' %
-                            z_dac, float(s_ent.get()) / float(z_con))
+                if float(s_ent.get()) / z_con <= z_lim:
+                    setattr(lockin,
+                            z_dac, float(s_ent.get()) / z_con)
                     time.sleep(float(ot_ent.get()))
-                    setattr(lockin, 'dac%s' % z_dac, 0)
+                    setattr(lockin, z_dac, 0)
                 else:
                     self.datalog.insert(
                         'end', 'Output exceeds Hz amp limit of %d V' % z_lim)
                     self.datalog.see('end')
             else:
                 if float(s_ent.get()) / float(x_con) <= x_lim:
-                    setattr(lockin, 'dac%s' %
-                            x_dac, float(s_ent.get()) / float(x_con))
+                    setattr(lockin,
+                            x_dac, float(s_ent.get()) / x_con)
                     time.sleep(float(ot_ent.get()))
                     setattr(lockin, 'dac%s' % x_dac, 0)
                 else:

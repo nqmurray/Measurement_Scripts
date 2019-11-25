@@ -4,8 +4,8 @@ import time
 import importlib
 import matplotlib.animation as animation
 from random import randint
-from GUIBaseClass_V2 import GUIBase
-from GUIBaseClass_V2 import animate_plot
+from GUIBaseClass import GUIBase
+from GUIBaseClass import animate_plot
 
 """
 Function is passed in the iterated value (output) from the array built with fix1 (loop control),
@@ -42,7 +42,7 @@ def fix_param2(output, delay, resources, kwargs):
 def measure_y(output, delay, resources, fix2, kwargs):
     # setattr(obj, name, value)
     time.sleep(0.01)
-    return float(output), float(output * 2 + randint(0, 2)), delay
+    return float(output), float(output / randint(1, 10)), delay
 
 
 def main():  # test version of the GUI_base and animation
@@ -136,7 +136,9 @@ def main():  # test version of the GUI_base and animation
         'Hx Dac': mag_settings['Hx Dac'],
         'Hz Dac': mag_settings['Hz Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
-        'Hz Conversion': mag_settings['Hz Conversion']
+        'Hz Conversion': mag_settings['Hz Conversion'],
+        'Hx Max': mag_settings['Hx Conversion'],
+        'Hz Max': mag_settings['Hz Conversion']
     }
 
     """

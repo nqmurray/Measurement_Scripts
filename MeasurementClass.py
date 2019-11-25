@@ -16,18 +16,15 @@ class Measurement():
                  loop, prog_queue, resources, kwargs):
 
         self.kwargs = kwargs
-        print(self.kwargs)
-
         sys.path.append(order_dict['module_path'])  # add path to import module
         # import specified module
         m_func = importlib.import_module(order_dict['module_name'],
                                          order_dict['module_path']), self.kwargs['Hx Dac'], self.kwargs['Hz Dac'], self.kwargs['Hx Conversion'], self.kwargs['Hz Conversion']
 
-        print(m_func[0])
         # results data, all shared between processes
-        self.x = gui_results['x_data']  # a shared array of 1000 floats
-        self.y = gui_results['y_data']  # a shared array of 1000 floats
-        # a shared array of 1000 floats, for guassmeter readings
+        self.x = gui_results['x_data']  # a shared array of floats
+        self.y = gui_results['y_data']  # a shared array of floats
+        # a shared array of floats, for guassmeter readings
         self.x2 = gui_results['x2_data']
         # a shared value (int), tells how many data points have been stored
         self.counter = gui_results['counter']
@@ -119,7 +116,7 @@ class Measurement():
 
     def activate_resources(self):
         # check resource and attempt to create instance, throw error if can't do that or find matching name/address
-        for name, address in self.measurement_resources:
+        for name, address in self.measurement_resources.items():
             if name == 'dsp_lockin':
                 try:
                     self.measurement_resources[name] = instruments.signalrecovery.DSP7265(
@@ -190,7 +187,7 @@ class Measurement():
     # builds numpy arrays determined by the loop direction, updates the total measurement length
     def build_array(self, start, end, step, direction):
         if step == 0:
-            return np.array[start]
+            return np.array[end]
         elif direction == 'low-high':
             arr = np.arange(start, end + step, step)
             return np.hstack((arr, np.flipud(arr[:-1:])))
@@ -207,7 +204,6 @@ class Measurement():
 
     # user passed function, runs the measurement
     def measure(self):
-        print('got here')
 
         if self.order['MOKE']:
             self.points = {'left': 0,
@@ -222,8 +218,8 @@ class Measurement():
         else:
             pass
 
-            # check that there are commands to build this loop, otherwise just run 1 time
-        if all(elem in self.order for elem in ('fix1_start, fix1_stop', 'fix1_step')):
+        # check that there are commands to build this loop, otherwise just run 1 time
+        if all(elem in self.order for elem in ['fix1_start', 'fix1_stop', 'fix1_step']):
             # build the arrays of floats to sweep over
             fix1_values = self.build_array(
                 float(self.kwargs[self.order['fix1_start']
@@ -237,7 +233,7 @@ class Measurement():
             fix1_values = [1]
 
         # check that there are commands to build this loop, otherwise just run 1 time
-        if all(elem in self.order for elem in ('fix2_start, fix2_stop', 'fix2_step')):
+        if all(elem in self.order for elem in ['fix2_start', 'fix2_stop', 'fix2_step']):
             fix2_values = self.build_array(
                 float(self.kwargs[self.order['fix2_start']
                                   ]), float(self.kwargs[self.order['fix2_stop']]),
@@ -259,10 +255,9 @@ class Measurement():
 
         self.tot_measurement_len = len(
             fix1_values) * len(fix2_values) * len(x_values)
-        print(self.tot_measurement_len)
 
         # check if measurement exceeds array length
-        if len(x_values) >= 1000:
+        if len(x_values) >= len(self.x):
             self.queue.put(
                 'Measurement exceeds array memory length! Please change in GUIBaseClass')
             self.quit.set()
