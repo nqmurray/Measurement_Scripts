@@ -6,8 +6,8 @@ import matplotlib.animation as animation
 import mss
 from PIL import Image
 from random import randint
-from GUIBaseClass_V2 import GUIBase
-from GUIBaseClass_V2 import animate_plot
+from GUIBaseClass import GUIBase
+from GUIBaseClass import animate_plot
 
 """
 Function is passed in the iterated value (output) from the array built with fix1 (loop control),
@@ -153,7 +153,9 @@ def main():  # test version of the GUI_base and animation
         'Hx Dac': mag_settings['Hx DAC'],
         'Hz Dac': mag_settings['Hz DAC'],
         'Hx Conversion': mag_settings['Hx Conversion'],
-        'Hz Conversion': mag_settings['Hz Conversion']
+        'Hz Conversion': mag_settings['Hz Conversion'],
+        'Hx Max': mag_settings['Hx Conversion'],
+        'Hz Max': mag_settings['Hz Conversion']
     }
 
     """
