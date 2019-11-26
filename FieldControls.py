@@ -25,15 +25,31 @@ SCREAM = {
     'Hx Max': 10
 }
 
+SCREAM_RESOURCES = {
+    'dsp_lockin': 'GPIB0::10::INSTR',
+    'keithley_2000': 'GPIB0::16::INSTR',
+    'keithley_2400': 'GPIB0::20::INSTR',
+    'gaussmeter': 'GPIB0::7::INSTR',
+    'sig_gen_8257': 'GPIB0::19::INSTR'
+}
+
 SCREAM02 = {
     'Hx Dac': 'dac1',
     'Hz Dac': 'dac2',
     'Hx Conversion': 3740,
-    'Hz Conversion': 2345,
+    'Hz Conversion': 1029.5,
     'Hx Delay': 0,
     'Hz Delay': 0,
-    'Hz Max': 1,  # max voltage allowed through the amp
+    'Hz Max': 0.25,  # max voltage allowed through the amp
     'Hx Max': 0.5
+}
+
+SCREAM02_RESOURCES = {
+    'dsp_lockin': 'GPIB0::10::INSTR',
+    'keithley_2000': 'GPIB0::16::INSTR',
+    'keithley_2400': 'GPIB0::20::INSTR',
+    'gaussmeter': 'GPIB0::7::INSTR',
+    'sig_gen_8257': 'GPIB0::19::INSTR'
 }
 
 

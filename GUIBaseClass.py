@@ -56,7 +56,7 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
         self.directory = os.path.expanduser('~\\Documents\\Measurements')
         # loop and file name initial values, later changed to widgets
         self.file_name = 'test_file'
-        self.loop = ['low-high', 'zero-zero', 'high-low']
+        self.loop = ['low-high', 'zero-zero', 'high-low', 'standard']
 
         # multiprocessing.Process controls, for quit and pause functions
         self.measure_process = ''  # initialized when measurement button is pressed
