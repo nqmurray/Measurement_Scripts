@@ -24,12 +24,13 @@ functions are not easily pickled in python.
 """
 
 sys.path.append(os.getcwd())  # add path to import dictionary
-mag = importlib.import_module('FieldControls',
-                              os.getcwd())  # import dictionary based on the name of the computer
-mag_settings = getattr(mag, os.environ.get('USERNAME'))
+defaults = importlib.import_module('FieldControls',
+                                   os.getcwd())  # import dictionary based on the name of the computer
+mag_settings = getattr(defaults, os.environ.get('USERNAME'))
+res_settings = getattr(defaults, os.environ.get('USERNAME') + '_RESOURCES')
 
 
-def fix_param1(output, delay, resources, kwargs):
+def fix_param1(index, output, delay, resources, kwargs):
     # setattr(obj, name, value)
     time.sleep(delay)
 
@@ -39,7 +40,7 @@ def fix_param2(output, delay, resources, kwargs):
     time.sleep(0.01)
 
 
-def measure_y(output, delay, resources, fix2, kwargs):
+def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
     # setattr(obj, name, value)
     time.sleep(0.01)
     return float(output), float(output / randint(1, 10)), delay
@@ -48,10 +49,11 @@ def measure_y(output, delay, resources, fix2, kwargs):
 def main():  # test version of the GUI_base and animation
     # test dictionary for settings
     resource_dict = {
-        'dsp_lockin': 'GPIB0::10::INSTR',
-        'keithley_2000': 'GPIB0::16::INSTR',
-        'keithley_2400': 'GPIB0::20::INSTR',
-        'gaussmeter': 'GPIB0::7::INSTR',
+        'dsp_lockin': res_settings['dsp_lockin'],
+        'keithley_2000': res_settings['keithley_2000'],
+        'keithley_2400': res_settings['keithley_2400'],
+        'gaussmeter': res_settings['gaussmeter'],
+        'sig_gen_8257': res_settings['sig_gen_8257'],
     }
 
     graph_dict = {
@@ -110,7 +112,7 @@ def main():  # test version of the GUI_base and animation
     """
 
     controls_dict1 = {
-        "title": "Current Controls",
+        "title": "Magnet Controls",
         "hx start": 0,
         "hx stop": 2,
         "hx step": 1,
@@ -121,7 +123,7 @@ def main():  # test version of the GUI_base and animation
     }
 
     controls_dict2 = {
-        "title": "Magnet Controls",
+        "title": "Current Controls",
         "current start": 1,
         "current stop": 2,
         "current step": 0.5
@@ -137,8 +139,8 @@ def main():  # test version of the GUI_base and animation
         'Hz Dac': mag_settings['Hz Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
         'Hz Conversion': mag_settings['Hz Conversion'],
-        'Hx Max': mag_settings['Hx Conversion'],
-        'Hz Max': mag_settings['Hz Conversion']
+        'Hx Max': mag_settings['Hx Max'],
+        'Hz Max': mag_settings['Hz Max']
     }
 
     """

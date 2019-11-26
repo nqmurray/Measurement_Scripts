@@ -10,7 +10,7 @@ class GaussMeter():
         # 475 Gaussmeter GPIB address 7?
         self.gm = self.rm.open_resource(address)
         # self.gm.write("")
-        #self.gm = self.gm.write("QTST?")
+        # self.gm = self.gm.write("QTST?")
         print("Gaussmeter Initialized")
 
     def test_mode(self):

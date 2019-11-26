@@ -5,7 +5,6 @@ import time
 import matplotlib.animation as animation
 import mss
 from PIL import Image
-from random import randint
 from GUIBaseClass import GUIBase
 from GUIBaseClass import animate_plot
 
@@ -26,11 +25,13 @@ functions are not easily pickled in python.
 """
 
 sys.path.append(os.getcwd())  # add path to import dictionary
-mag_settings = importlib.import_module(os.environ.get('USERNAME'),
-                                       os.getcwd())  # import dictionary based on the name of the computer
+defaults = importlib.import_module('FieldControls',
+                                   os.getcwd())  # import dictionary based on the name of the computer
+mag_settings = getattr(defaults, os.environ.get('USERNAME'))
+res_settings = getattr(defaults, os.environ.get('USERNAME') + '_RESOURCES')
 
 
-def fix_param1(output, delay, resources, kwargs):
+def fix_param1(index, output, delay, resources, kwargs):
     time.sleep(delay)
 
 
@@ -38,10 +39,7 @@ def fix_param2(output, delay, resources, kwargs):
     time.sleep(0.01)
 
 
-def measure_y(output, delay, resources, points, fix2, kwargs):
-    time.sleep(0.01)
-    return float(output), image_rgb(points), delay
-
+def measure_y(output, delay, resources, points, fix1_output, fix2_output, kwargs):
     # takes the dictionary passed in and measures the rgb values for each pixel in the given
     def image_rgb(point_dict):
 
@@ -60,15 +58,17 @@ def measure_y(output, delay, resources, points, fix2, kwargs):
 
         return (r + g + b) / (img.size[0] * img.size[1])
 
+    time.sleep(0.01)
+    return float(output), image_rgb(points), delay
+
 
 def main():  # test version of the GUI_base and animation
     # test dictionary for settings
     resource_dict = {
-        'dsp_lockin': 'GPIB0::10::INSTR',
-        'keithley_2000': 'GPIB0::16::INSTR',
-        'keithley_2400': 'GPIB0::20::INSTR',
-        'gaussmeter': 'GPIB0::7::INSTR',
-        'sig_gen_8257': 'GPIB0::19::INSTR',
+        'dsp_lockin': res_settings['dsp_lockin'],
+        'keithley_2000': res_settings['keithley_2000'],
+        'keithley_2400': res_settings['keithley_2400'],
+        'gaussmeter': res_settings['gaussmeter'],
     }
 
     graph_dict = {
@@ -106,7 +106,7 @@ def main():  # test version of the GUI_base and animation
         # directory from which the preceeding modules will be imported from
         'module_path': os.getcwd(),
         # name of the file to get the functions from
-        'module_name': 'Sample_Measurement',
+        'module_name': 'MOKE_Sample_Measurement',
         'fix1_start': 'hx start',
         'fix1_stop': 'hx stop',
         'fix1_step': 'hx step',
@@ -154,8 +154,8 @@ def main():  # test version of the GUI_base and animation
         'Hz Dac': mag_settings['Hz DAC'],
         'Hx Conversion': mag_settings['Hx Conversion'],
         'Hz Conversion': mag_settings['Hz Conversion'],
-        'Hx Max': mag_settings['Hx Conversion'],
-        'Hz Max': mag_settings['Hz Conversion']
+        'Hx Max': mag_settings['Hx Max'],
+        'Hz Max': mag_settings['Hz Max']
     }
 
     """

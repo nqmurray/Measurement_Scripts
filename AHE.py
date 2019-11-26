@@ -7,13 +7,20 @@ from GUIBaseClass import GUIBase
 from GUIBaseClass import animate_plot
 
 sys.path.append(os.getcwd())  # add path to import dictionary
-mag = importlib.import_module('FieldControls',
-                              os.getcwd())  # import dictionary based on the name of the computer
-mag_settings = getattr(mag, os.environ.get('USERNAME'))
+defaults = importlib.import_module('FieldControls',
+                                   os.getcwd())  # import dictionary based on the name of the computer
+mag_settings = getattr(defaults, os.environ.get('USERNAME'))
+res_settings = getattr(defaults, os.environ.get('USERNAME') + '_RESOURCES')
 
 
 # set Hx field, wait for delay
-def fix_param1(output, delay, resources, kwargs):
+def fix_param1(index, output, delay, resources, kwargs):
+    if index == 0:
+        resources['keithley_2000'].auto_range()
+        resources['keithley_2000'].mode = 'voltage'
+        resources['keithley_2400'].apply_current(
+            compliance_voltage=200)
+        resources['keithley_2400'].auto_range_source()
     setattr(resources['dsp_lockin'], kwargs['Hx Dac'],
             output / float(kwargs['Hx Conversion']))  # obj, name, value
     time.sleep(delay)
@@ -25,25 +32,25 @@ def fix_param2(output, delay, resources, kwargs):
 
 
 # set Hz field, wait for delay, measure Hz field, measure voltage, take average return resistance
-def measure_y(output, delay, resources, fix2, kwargs):
+def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
     setattr(resources['dsp_lockin'], kwargs['Hz Dac'],
             output / float(kwargs['Hz Conversion']))
     time.sleep(delay)
     x2 = resources['gaussmeter'].measure()
-    y = 0
+    y = 0.0
     for i in range(int(kwargs['averages'])):
         y += resources['keithley_2000'].voltage
-        y = (y * 1000 / int(kwargs['averages'])) / fix2
+        y = (y * 1000 / int(kwargs['averages'])) / fix2_output
     return float(output), float(y), x2
 
 
 def main():  # test version of the GUI_base and animation
     # test dictionary for settings
     resource_dict = {
-        'dsp_lockin': 'GPIB0::10::INSTR',
-        'keithley_2000': 'GPIB0::16::INSTR',
-        'keithley_2400': 'GPIB0::20::INSTR',
-        'gaussmeter': 'GPIB0::7::INSTR',
+        'dsp_lockin': res_settings['dsp_lockin'],
+        'keithley_2000': res_settings['keithley_2000'],
+        'keithley_2400': res_settings['keithley_2400'],
+        'gaussmeter': res_settings['gaussmeter'],
     }
 
     graph_dict = {
@@ -53,8 +60,8 @@ def main():  # test version of the GUI_base and animation
         "x_title": "Applied Field (Oe)",  # i.e. Applied Field (Oe)
         "y_title": "Realtime Resistance (Ohm)",  # i.e. Hall Resistance (Ohm)
         # for gaussmeter readings, leave blank if no gaussmeter used
-        "x2_title": "Gaussmeter (Ohm)",
-        "fixed_param_1": "Hx (Oe)",  # i.e. Hx 100 (Oe)
+        "x2_title": "Gaussmeter (Oe)",
+        "fixed_param_1": "Hx Field (Oe)",  # i.e. Hx 100 (Oe)
         "fixed_param_2": "Current (mA)"  # i.e. Current 1.9 (mA)
     }
 
@@ -109,8 +116,8 @@ def main():  # test version of the GUI_base and animation
         'Hz Dac': mag_settings['Hz Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
         'Hz Conversion': mag_settings['Hz Conversion'],
-        'Hx Max': mag_settings['Hx Conversion'],
-        'Hz Max': mag_settings['Hz Conversion']
+        'Hx Max': mag_settings['Hx Max'],
+        'Hz Max': mag_settings['Hz Max']
     }
 
     """

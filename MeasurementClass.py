@@ -129,8 +129,6 @@ class Measurement():
                 try:
                     self.measurement_resources[name] = instruments.keithley.Keithley2000(
                         address)
-                    self.measurement_resources[name].auto_range()
-                    self.measurement_resources[name].mode = 'voltage'
                 except Exception as err:
                     self.queue.put('Error in initializing ' + str(name) +
                                    ' at ' + str(address) + ':' + str(err))
@@ -139,9 +137,6 @@ class Measurement():
                 try:
                     self.measurement_resources[name] = instruments.keithley.Keithley2400(
                         address)
-                    self.measurement_resources[name].apply_current(
-                        compliance_voltage=200)
-                    self.measurement_resources[name].auto_range_source()
                 except Exception as err:
                     self.queue.put('Error in initializing ' + str(name) +
                                    ' at ' + str(address) + ':' + str(err))
@@ -202,6 +197,35 @@ class Measurement():
             # case for normal numpy arrays
             return np.arange(start, end + step, step)
 
+    # checks if output exceeds limit
+    def check_amp_limits(self, direction, array):
+        if direction == 'none':  # accounts for loops that don't have hx or hz
+            pass
+        else:
+            try:
+                amp_max = float(self.kwargs['%s Max' % direction])
+                conversion = float(self.kwargs['%s Conversion' % direction])
+            except Exception as err:
+                self.queue.put(str(direction) +
+                               ' maximum not found! ' + str(err))
+                self.quit.set()
+
+            if np.max(array) > amp_max / conversion:
+                self.queue.put(str(np.max(array)) + ' exceeds ' +
+                               str(direction) + ' amp output limit!')
+                self.quit.set()
+            else:
+                pass
+
+    # check the loop direction and return it
+    def check_direction(self, key):
+        if 'hx' in self.order[key].lower():
+            return 'Hx'
+        elif 'hz' in self.order[key].lower():
+            return 'Hz'
+        else:
+            return 'none'
+
     # user passed function, runs the measurement
     def measure(self):
 
@@ -227,6 +251,9 @@ class Measurement():
                 float(self.kwargs[self.order['fix1_step']
                                   ]), 'none'
             )
+            # check if amp limits are protected
+            self.check_amp_limits(
+                self.check_direction('fix1_start'), fix1_values)
         else:
             self.queue.put(
                 'No fixed loop one values detected, setting loop to 1')
@@ -240,6 +267,9 @@ class Measurement():
                 float(self.kwargs[self.order['fix2_step']
                                   ]), 'none'
             )
+            # check if amp limits are protected
+            self.check_amp_limits(
+                self.check_direction('fix2_start'), fix2_values)
         else:
             self.queue.put(
                 'No fixed loop two values detected, setting loop to 1')
@@ -252,7 +282,9 @@ class Measurement():
             float(self.kwargs[self.order['x_step']
                               ]), self.loop
         )
+        self.check_amp_limits(self.check_direction('x_start'), x_values)
 
+        # update the total measurement length to the proper value
         self.tot_measurement_len = len(
             fix1_values) * len(fix2_values) * len(x_values)
 
@@ -275,7 +307,7 @@ class Measurement():
             else:
                 f1_delay = abs(fix_1) + abs(fix1_values[f1_count - 1])
             # run user function
-            self.fix1func(fix_1, self.charging_delay(
+            self.fix1func(f1_count, fix_1, self.charging_delay(
                 f1_delay), self.measurement_resources, self.kwargs)
 
             # set fixed values, update graph
@@ -313,13 +345,13 @@ class Measurement():
                         self.x[x_count], self.y[x_count], self.x2[x_count] = self.yfunc(
                             x_val, self.charging_delay(
                                 x_delay),
-                            self.measurement_resources, self.points,
+                            self.measurement_resources, self.points, fix_1,
                             fix_2, self.kwargs)
                     else:
                         self.x[x_count], self.y[x_count], self.x2[x_count] = self.yfunc(
                             x_val, self.charging_delay(
                                 x_delay),
-                            self.measurement_resources, fix_2, self.kwargs)
+                            self.measurement_resources, fix_1, fix_2, self.kwargs)
                     with self.counter.get_lock():
                         self.counter.value = x_count + 1  # where data is stored to in the shared array
                     self.progress_counter += 1
