@@ -18,8 +18,9 @@ class Measurement():
         self.kwargs = kwargs
         sys.path.append(order_dict['module_path'])  # add path to import module
         # import specified module
+
         m_func = importlib.import_module(order_dict['module_name'],
-                                         order_dict['module_path']), self.kwargs['Hx Dac'], self.kwargs['Hz Dac'], self.kwargs['Hx Conversion'], self.kwargs['Hz Conversion']
+                                         order_dict['module_path'])
 
         # results data, all shared between processes
         self.x = gui_results['x_data']  # a shared array of floats
@@ -38,13 +39,12 @@ class Measurement():
         # resource command functions
         # get the specific function from module
         try:
-            self.fix1func = getattr(m_func[0], order_dict['fixed_func_1'])
-            self.fix2func = getattr(m_func[0], order_dict['fixed_func_2'])
-            self.yfunc = getattr(m_func[0], order_dict['measure_y_func'])
+            self.fix1func = getattr(m_func, order_dict['fixed_func_1'])
+            self.fix2func = getattr(m_func, order_dict['fixed_func_2'])
+            self.yfunc = getattr(m_func, order_dict['measure_y_func'])
         except Exception as err:
             self.queue.put('Resource functions not found: ', err)
             self.quit.set()
-
         # Save function info
         self.graph = gui_graph  # dictionary of graph titles, also used for saving
         self.f1_header = self.graph['fixed_param_1']
@@ -60,8 +60,31 @@ class Measurement():
         self.order = order_dict
         # dictionary of resources with names and address, when initialized address becomes instance
         self.measurement_resources = resources
+        self.map_sensitivity()
 
-    # save data, including arbitrary data user wants saved
+    # map sensitivity to a numerical value
+    def map_sensitivity(self):
+        sensitivity_dict = {
+            '10uV': 10.0e-6,
+            '20uV': 20.0e-6,
+            '50uV': 50.0e-6,
+            '100uV': 100.0e-6,
+            '1mV': 1.0e-3,
+            '2mV': 2.0e-3,
+            '5mV': 5.0e-3,
+            '10mV': 10.0e-3,
+            '20mV': 20.0e-3,
+            '50mV': 50.0e-3,
+            '100mV': 100.0e-3,
+            '200mV': 200.0e-3,
+        }
+        if "Sensitivity" in self.kwargs:
+            self.kwargs['Sensitivity'] = sensitivity_dict[self.kwargs['Sensitivity']]
+            print('sensitivity set to: ', self.kwargs['Sensitivity'])
+        else:
+            pass
+
+     # save data, including arbitrary data user wants saved
     def save_function(self, f1, f2):
 
         # save function proper
@@ -150,7 +173,7 @@ class Measurement():
                     self.quit.set()
             elif name == 'sig_gen_8257':
                 try:
-                    self.measurement_resources[name] = instruments.signalrecovery.DSP7265(
+                    self.measurement_resources[name] = instruments.agilent.Agilent8257D(
                         address)
                 except Exception as err:
                     self.queue.put('Error in initializing ' + str(name) +
@@ -182,7 +205,7 @@ class Measurement():
     # builds numpy arrays determined by the loop direction, updates the total measurement length
     def build_array(self, start, end, step, direction):
         if step == 0:
-            return np.array[end]
+            return [end]
         elif direction == 'low-high':
             arr = np.arange(start, end + step, step)
             return np.hstack((arr, np.flipud(arr[:-1:])))
@@ -210,7 +233,7 @@ class Measurement():
                                ' maximum not found! ' + str(err))
                 self.quit.set()
 
-            if np.max(array) > amp_max / conversion:
+            if np.max(array) > conversion / amp_max:
                 self.queue.put(str(np.max(array)) + ' exceeds ' +
                                str(direction) + ' amp output limit!')
                 self.quit.set()
@@ -295,7 +318,7 @@ class Measurement():
             self.quit.set()
 
         # iteratre through dictionary of machines, turn address time into instance of resource
-        # self.activate_resources()  # sets quit flag if fails
+        self.activate_resources()  # sets quit flag if fails
 
         # set first fixed values
         for f1_count, fix_1 in enumerate(fix1_values):
@@ -383,7 +406,7 @@ class Measurement():
         else:
             self.queue.put('Measurement finished')
         self.queue.put('Shutting down instruments...')
-        # self.shutdown_resources()
+        self.shutdown_resources()
         self.queue.put('Job Finished')  # end measurement
 
 # ============================= MOKE FUNCTIONS ====================================== #
