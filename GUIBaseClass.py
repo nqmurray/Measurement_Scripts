@@ -299,7 +299,6 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
     # =====================Button Controls Here===================== #
     # measure loop, this will acutally just spawn a thread that runs the target function passed to it
     def measure_method(self):
-
         try:
             # makes sure there are no other measurement processes alive
             if len(mp.active_children()) == 0:
@@ -319,7 +318,6 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
                             loop_params[key] = value.get()
                         else:
                             pass
-
                 m = Measurement(self.order, self.results, self.graph, self.pause_flag,
                                 self.quit_flag, self.directory, self.file_name.get(),
                                 self.loop.get(), self.queue, self.machines, loop_params)
@@ -332,8 +330,8 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
                 raise Exception(
                     'Multiple Active Measurement Processes Detected!')
         except Exception as err:
-            print('An Exception Occured: ' + str(err))
-            self.datalog.insert('end', 'An Exception Occured: ' + str(err))
+            print('An Exception Occured starting measurement: ' + str(err))
+            self.datalog.insert('end', 'An Exception Occured starting measurement: ' + str(err))
             self.datalog.see('end')
 
     # Calls updates after processing the queue, runs every 100 ms
@@ -471,7 +469,7 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
                     setattr(lockin,
                             x_dac, float(s_ent.get()) / x_con)
                     time.sleep(float(ot_ent.get()))
-                    setattr(lockin, 'dac%s' % x_dac, 0)
+                    setattr(lockin, x_dac, 0)
                 else:
                     self.datalog.insert(
                         'end', 'Output exceeds Hx amp limit of %d V' % x_lim)

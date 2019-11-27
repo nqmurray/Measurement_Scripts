@@ -3,6 +3,7 @@ import sys
 import time
 import importlib
 import matplotlib.animation as animation
+from pymeasure import instruments
 from GUIBaseClass import GUIBase
 from GUIBaseClass import animate_plot
 
@@ -15,10 +16,13 @@ res_settings = getattr(defaults, os.environ.get('USERNAME') + '_RESOURCES')
 
 def fix_param1(index, output, delay, resources, kwargs):
     if index == 0:  # initialize machines first time around
+        resources['sig_gen_8257'].enable()
         resources['sig_gen_8257'].enable_modulation()
+        resources['sig_gen_8257'].enable_amplitude_modulation()
         resources['sig_gen_8257'].enable_low_freq_out()
         resources['sig_gen_8257'].amplitude_source = 'internal'
         resources['sig_gen_8257'].low_freq_out_source = 'internal'
+        resources['sig_gen_8257'].amplitude_depth = 99.0
         resources['dsp_lockin'].reference = 'external front'
         resources['dsp_lockin'].sensitivity = kwargs['Sensitivity']
         resources['sig_gen_8257'].internal_frequency = float(
@@ -29,7 +33,7 @@ def fix_param1(index, output, delay, resources, kwargs):
 
 
 def fix_param2(output, delay, resources, kwargs):
-    resources['sig_gen_8257'].frequency = output * 10e9
+    resources['sig_gen_8257'].frequency = output * 10**9
 
 
 def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
@@ -41,7 +45,7 @@ def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
         y += resources['dsp_lockin'].x
     y = (y / int(kwargs['averages']))
 
-    return output, y
+    return output, y, 0
 
 
 def main():
@@ -93,7 +97,7 @@ def main():
         "power stop": 10,
         "power step": 1,
         "frequency start": 4.0,
-        "frequency end": 5.0,
+        "frequency stop": 5.0,
         "frequency step": 0,
         "modulation frequency": 500,
         "signal voltage": 0.7

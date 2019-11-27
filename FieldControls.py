@@ -5,15 +5,6 @@ from scipy import optimize
 from pymeasure import instruments
 from GaussMeterClass import GaussMeter
 
-Neuromancer = {
-    'Hx Dac': 'dac3',
-    'Hx Conversion': 393.5,
-    'Hz Dac': 'dac2',
-    'Hz Conversion': 1234,
-    'Hx Max': 10000,
-    'Hz Max': 10000
-}
-
 SCREAM = {
     'Hx Dac': 'dac3',
     'Hz Dac': 'dac2',
@@ -30,7 +21,7 @@ SCREAM_RESOURCES = {
     'keithley_2000': 'GPIB0::16::INSTR',
     'keithley_2400': 'GPIB0::20::INSTR',
     'gaussmeter': 'GPIB0::7::INSTR',
-    'sig_gen_8257': 'GPIB0::19::INSTR'
+    'sig_gen_8257': 'GPIB0::18::INSTR'
 }
 
 SCREAM02 = {
@@ -49,7 +40,7 @@ SCREAM02_RESOURCES = {
     'keithley_2000': 'GPIB0::16::INSTR',
     'keithley_2400': 'GPIB0::20::INSTR',
     'gaussmeter': 'GPIB0::7::INSTR',
-    'sig_gen_8257': 'GPIB0::19::INSTR'
+    'sig_gen_8257': 'GPIB0::18::INSTR'
 }
 
 
