@@ -206,6 +206,8 @@ class Measurement():
     def build_array(self, start, end, step, direction):
         if step == 0:
             return [end]
+        elif start == step and step == end: # where just one value is needed
+            return np.arange(0, start, 1)
         elif direction == 'low-high':
             arr = np.arange(start, end + step, step)
             return np.hstack((arr, np.flipud(arr[:-1:])))
