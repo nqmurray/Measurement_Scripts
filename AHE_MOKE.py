@@ -117,8 +117,8 @@ def main():  # test version of the GUI_base and animation
 
     lockin_controls = {
         "title": "Lockin",
-        'Hx Dac': mag_settings['Hx DAC'],
-        'Hz Dac': mag_settings['Hz DAC'],
+        'Hx Dac': mag_settings['Hx Dac'],
+        'Hz Dac': mag_settings['Hz Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
         'Hz Conversion': mag_settings['Hz Conversion'],
         'Hx Max': mag_settings['Hx Max'],

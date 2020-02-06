@@ -328,7 +328,7 @@ class Measurement():
             if f1_count == 0:
                 f1_delay = fix_1
             else:
-                f1_delay = abs(fix_1) + abs(fix1_values[f1_count - 1])
+                f1_delay = abs(abs(fix_1) - abs(fix1_values[f1_count - 1]))
             # run user function
             self.fix1func(f1_count, fix_1, self.charging_delay(
                 f1_delay), self.measurement_resources, self.kwargs)
@@ -349,7 +349,7 @@ class Measurement():
                 if f2_count == 0:
                     f2_delay = fix_2
                 else:
-                    f2_delay = abs(fix_2) + abs(fix2_values[f2_count - 1])
+                    f2_delay = abs(abs(fix_2) - abs(fix2_values[f2_count - 1]))
                 # run user function
                 self.fix2func(fix_2, self.charging_delay(
                     f2_delay), self.measurement_resources, self.kwargs)
@@ -362,7 +362,7 @@ class Measurement():
                     if x_count == 0:
                         x_delay = x_val
                     else:
-                        x_delay = abs(x_val) + abs(x_values[x_count - 1])
+                        x_delay = abs(abs(x_val) - abs(x_values[x_count - 1]))
                     # run user function depending on if MOKE measurement or not
                     if self.order['MOKE']:
                         self.x[x_count], self.y[x_count], self.x2[x_count] = self.yfunc(
@@ -421,7 +421,7 @@ def meas_region(p_dict, flag):
     reg.attributes('-alpha', 0.8)
 
     det_btn = tk.Button(master=reg, text='Select Region',
-                        command=lambda: select_coords(reg, p_dict), width=15)
+                        command=lambda: select_coords(reg, p_dict, flag), width=15)
     det_btn.pack()
 
     reg.protocol('WM_DELETE_WINDOW', quit)
@@ -434,5 +434,5 @@ def select_coords(master, p_dict, flag):
     p_dict['top'] = master.winfo_y()
     p_dict['width'] = master.winfo_width()
     p_dict['height'] = master.winfo_height()
-    flag.clear()  # set the flag to let the measurement continue
-    master.quit()  # destroys the GUI window
+    flag.set()  # set the flag to let the measurement continue
+    master.destroy()
