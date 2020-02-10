@@ -6,6 +6,7 @@ import matplotlib.animation as animation
 from pymeasure import instruments
 from GUIBaseClass import GUIBase
 from GUIBaseClass import animate_plot
+import time
 
 sys.path.append(os.getcwd())  # add path to import dictionary
 defaults = importlib.import_module('FieldControls',
@@ -16,24 +17,27 @@ res_settings = getattr(defaults, os.environ.get('USERNAME') + '_RESOURCES')
 
 def fix_param1(index, output, delay, resources, kwargs):
     if index == 0:  # initialize machines first time around
-        resources['sig_gen_8257'].enable()
-        resources['sig_gen_8257'].enable_modulation()
-        resources['sig_gen_8257'].enable_amplitude_modulation()
-        resources['sig_gen_8257'].enable_low_freq_out()
         resources['sig_gen_8257'].amplitude_source = 'internal'
         resources['sig_gen_8257'].low_freq_out_source = 'internal'
-        resources['sig_gen_8257'].amplitude_depth = 99.0
-        resources['dsp_lockin'].reference = 'external front'
-        resources['dsp_lockin'].sensitivity = kwargs['Sensitivity']
-        resources['sig_gen_8257'].internal_frequency = float(
-            kwargs['modulation frequency'])
         resources['sig_gen_8257'].low_freq_out_amplitude = float(
             kwargs['signal voltage'])
+        resources['sig_gen_8257'].enable_modulation()
+        resources['sig_gen_8257'].config_amplitude_modulation(
+            frequency=float(kwargs['modulation frequency']),
+            depth=99.0,
+            shape='sine'
+        )
+        resources['sig_gen_8257'].enable_low_freq_out()
+        resources['dsp_lockin'].reference = 'external front'
+        resources['dsp_lockin'].sensitivity = kwargs['Sensitivity']
+        resources['dsp_lockin'].frequency = float(
+            kwargs['modulation frequency'])
     resources['sig_gen_8257'].power = output
 
 
 def fix_param2(output, delay, resources, kwargs):
     resources['sig_gen_8257'].frequency = output * 10**9
+    resources['sig_gen_8257'].enable()
 
 
 def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
@@ -93,11 +97,11 @@ def main():
 
     controls_dict2 = {
         "title": "Signal Generator Controls",
-        "power start": 5.0,
-        "power stop": 10,
-        "power step": 1,
-        "frequency start": 4.0,
-        "frequency stop": 5.0,
+        "power start": 25,
+        "power stop": 25,
+        "power step": 0,
+        "frequency start": 6,
+        "frequency stop": 6,
         "frequency step": 0,
         "modulation frequency": 500,
         "signal voltage": 0.7
@@ -106,7 +110,7 @@ def main():
     lockin_controls = {
         "title": "Lockin",
         "Sensitivity": '10uV',
-        "averages": 1,
+        "averages": 10,
         'Hx Dac': mag_settings['Hx Dac'],
         'Hx Conversion': mag_settings['Hx Conversion'],
         'Hx Max': mag_settings['Hx Max'],
