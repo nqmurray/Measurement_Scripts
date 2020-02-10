@@ -49,6 +49,7 @@ class Measurement():
         self.graph = gui_graph  # dictionary of graph titles, also used for saving
         self.f1_header = self.graph['fixed_param_1']
         self.f2_header = self.graph['fixed_param_2']
+        print(self.f1_header, self.f2_header)
         self.directory = save_dir  # directory where files are saved
         self.name = save_name  # name of file
         self.loop = loop  # loop type for save file
@@ -93,7 +94,9 @@ class Measurement():
             self.f2_header + '_' + self.loop + '_' + \
             t + '.csv'
         # replace all spaces
-        f = ''.join(['_' if i == ' ' else i for i in string])
+        str1 = ''.join(['_' if i == ' ' else i for i in string])
+        # replace all semicolons
+        f = ''.join(['' if i == ':' else i for i in str1])
 
         try:
             with open(self.directory + '\\' + f, 'w', newline='', encoding='utf-8') as csvfile:
@@ -191,6 +194,7 @@ class Measurement():
                 if name == 'keithley_2400':
                     inst.ramp_to_current(10e-6)  # set current to 10 microAmps
                     inst.compliance_voltage = 2.1  # set compliance to 2.1 V
+                    resources['keithley_2400'].auto_range_source()
                     inst.shutdown()
                 elif name == 'dsp_lockin':
                     inst.dac1, inst.dac2, inst.dac3, inst.dac4 = 0, 0, 0, 0  # turn off all dac outputs
@@ -233,7 +237,7 @@ class Measurement():
                                ' maximum not found! ' + str(err))
                 self.quit.set()
 
-            if np.max(array) > conversion / amp_max:
+            if np.max(array) / conversion > amp_max:
                 self.queue.put(str(np.max(array)) + ' exceeds ' +
                                str(direction) + ' amp output limit!')
                 self.quit.set()

@@ -18,9 +18,12 @@ def fix_param1(index, output, delay, resources, kwargs):
     if index == 0:
         resources['keithley_2000'].auto_range()
         resources['keithley_2000'].mode = 'voltage'
-        resources['keithley_2400'].apply_current(
-            compliance_voltage=200)
-        resources['keithley_2400'].auto_range_source()
+        r1 = measure_resistance()  # check the device resistance
+        print(r1)
+        resources['keithley_2400'].apply_current() # sets keithley up to source current
+        resources['keithley_2400'].source_current_range = float(kwargs['current stop']) / 1000 # sets source current range in mA
+        resources['keithley_2400'].compliance_voltage = int((float(kwargs['current stop']) / 1000) * r1) + 1 # set compliance voltage
+        resources['keithley_2400'].enable_source()
     setattr(resources['dsp_lockin'], kwargs['Hz Dac'],
             output / float(kwargs['Hz Conversion']))
     time.sleep(delay)
