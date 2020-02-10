@@ -6,6 +6,7 @@ import matplotlib.animation as animation
 from pymeasure import instruments
 from GUIBaseClass import GUIBase
 from GUIBaseClass import animate_plot
+import time
 
 sys.path.append(os.getcwd())  # add path to import dictionary
 defaults = importlib.import_module('FieldControls',
@@ -44,6 +45,7 @@ def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
     for i in range(int(kwargs['averages'])):
         y += resources['dsp_lockin'].x
     y = (y / int(kwargs['averages']))
+
 
     return output, y, 0
 
@@ -93,11 +95,11 @@ def main():
 
     controls_dict2 = {
         "title": "Signal Generator Controls",
-        "power start": 5.0,
-        "power stop": 10,
-        "power step": 1,
-        "frequency start": 4.0,
-        "frequency stop": 5.0,
+        "power start": 25,
+        "power stop": 25,
+        "power step": 0,
+        "frequency start": 6,
+        "frequency stop": 6,
         "frequency step": 0,
         "modulation frequency": 500,
         "signal voltage": 0.7

@@ -238,8 +238,14 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
                     mod += 1
                 elif key == 'Sensitivity':
                     lab = ttk.Label(lf, width=20, text=key + ':', anchor='w')
-                    bx = ttk.Combobox(lf, width=10, state='readonly', values=('2nV', '5nV', '10nV', '20nV', '50nV', '100nV', '200nV', '500nV', '1uV', '2uV',
-                                                                              '5uV', '10uV', '20uV', '50uV', '100uV', '200uV', '500uV', '1mV', '2mV', '5mV', '10mV', '20mV', '50mV', '100mV', '200mV', '500mV', '1V'))
+                    bx = ttk.Combobox(lf, width=10, state='readonly',
+                        values=('2nV', '5nV', '10nV', '20nV', '50nV',
+                            '100nV', '200nV', '500nV', '1uV', '2uV',
+                            '5uV', '10uV', '20uV', '50uV', '100uV',
+                            '200uV', '500uV', '1mV', '2mV', '5mV',
+                            '10mV', '20mV', '50mV', '100mV', '200mV',
+                            '500mV', '1V'
+                            ))
 
                     if value in bx.cget('values'):
                         bx.set(value)

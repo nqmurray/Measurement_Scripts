@@ -24,7 +24,7 @@ SCREAM_RESOURCES = {
     'sig_gen_8257': 'GPIB0::18::INSTR'
 }
 
-SCREAM02 = {
+Tai = {
     'Hx Dac': 'dac1',
     'Hz Dac': 'dac2',
     'Hx Conversion': 3740,
@@ -35,7 +35,7 @@ SCREAM02 = {
     'Hx Max': 0.5
 }
 
-SCREAM02_RESOURCES = {
+Tai_RESOURCES = {
     'dsp_lockin': 'GPIB0::10::INSTR',
     'keithley_2000': 'GPIB0::16::INSTR',
     'keithley_2400': 'GPIB0::20::INSTR',

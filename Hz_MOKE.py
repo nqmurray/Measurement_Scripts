@@ -24,12 +24,6 @@ def fix_param2(output, delay, resources, kwargs):
 
 
 def measure_y(output, delay, resources, points, fix1_output, fix2_output, kwargs):
-    setattr(resources['dsp_lockin'], kwargs['Hz Dac'],
-            output / float(kwargs['Hz Conversion']))
-    time.sleep(delay)
-    y = image_rgb(points)
-    return float(output), y, 'na'
-
     # takes the dictionary passed in and measures the rgb values for each pixel in the given
     def image_rgb(point_dict):
 
@@ -48,6 +42,13 @@ def measure_y(output, delay, resources, points, fix1_output, fix2_output, kwargs
 
         return (r + g + b) / (img.size[0] * img.size[1])
 
+    setattr(resources['dsp_lockin'], kwargs['Hz Dac'],
+            output / float(kwargs['Hz Conversion']))
+    time.sleep(delay)
+    y = image_rgb(points)
+    return float(output), y, 0
+
+
 
 def main():  # test version of the GUI_base and animation
     # test dictionary for settings
@@ -55,7 +56,6 @@ def main():  # test version of the GUI_base and animation
         'dsp_lockin': res_settings['dsp_lockin'],
         'keithley_2000': res_settings['keithley_2000'],
         'keithley_2400': res_settings['keithley_2400'],
-        'gaussmeter': res_settings['gaussmeter'],
     }
 
     graph_dict = {
@@ -92,13 +92,13 @@ def main():  # test version of the GUI_base and animation
 
     lockin_controls = {
         "title": "Lockin",
-        'Hz Dac': mag_settings['Hz DAC'],
+        'Hz Dac': mag_settings['Hz Dac'],
         'Hz Conversion': mag_settings['Hz Conversion'],
         'Hz Max': mag_settings['Hz Max']
     }
 
     measurement_gui = GUIBase(graph_dict, resource_dict, loop_commands,
-                              controls_dict1, controls_dict2, lockin_controls)
+                              controls_dict1, lockin_controls)
     ani = animation.FuncAnimation(
         measurement_gui.fig, animate_plot, interval=200, fargs=[measurement_gui.ax, measurement_gui.graph, measurement_gui.results, measurement_gui.progress_bar, measurement_gui.time_var])
     measurement_gui.mainloop()
