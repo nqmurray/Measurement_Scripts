@@ -128,10 +128,18 @@ def main():  # test version of the GUI_base and animation
     and then start the GUIBase.
     """
 
-    measurement_gui = GUIBase(graph_dict, resource_dict, loop_commands,
-                              controls_dict1, controls_dict2, lockin_controls)
+    measurement_gui = GUIBase(graph_dict,
+                              resource_dict,
+                              loop_commands,
+                              controls_dict1,
+                              controls_dict2,
+                              lockin_controls)
     ani = animation.FuncAnimation(
-        measurement_gui.fig, animate_plot, interval=200, fargs=[measurement_gui.ax, measurement_gui.graph, measurement_gui.results, measurement_gui.progress_bar, measurement_gui.time_var])
+        measurement_gui.fig, animate_plot, interval=200, fargs=[measurement_gui.ax,
+                                                                measurement_gui.graph,
+                                                                measurement_gui.results,
+                                                                measurement_gui.progress_bar,
+                                                                measurement_gui.time_var])
     measurement_gui.mainloop()
 
 

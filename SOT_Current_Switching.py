@@ -41,7 +41,8 @@ def measure_y(output, delay, resources, fix1_output, fix2_output, kwargs):
     y = 0.0
     for i in range(int(kwargs['averages'])):
         y += resources['keithley_2000'].voltage
-        y = (y * 1000 / int(kwargs['averages'])) / fix2_output
+        y = (y * 1000 / int(kwargs['averages'])) / float(
+            kwargs['sensing current'])
     resources['keithley_2400'].source_current = 0  # turn off current
     return output, y, x2
 
@@ -119,7 +120,8 @@ def main():
     measurement_gui = GUIBase(graph_dict, resource_dict, loop_commands,
                               controls_dict1, controls_dict2, lockin_controls)
     ani = animation.FuncAnimation(
-        measurement_gui.fig, animate_plot, interval=200, fargs=[measurement_gui.ax, measurement_gui.graph, measurement_gui.results, measurement_gui.progress_bar, measurement_gui.time_var])
+        measurement_gui.fig, animate_plot, interval=200, fargs=[measurement_gui.ax, measurement_gui.graph,
+                                                                measurement_gui.results, measurement_gui.progress_bar, measurement_gui.time_var])
     measurement_gui.mainloop()
 
 

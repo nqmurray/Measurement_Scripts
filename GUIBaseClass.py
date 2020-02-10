@@ -331,7 +331,8 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
                     'Multiple Active Measurement Processes Detected!')
         except Exception as err:
             print('An Exception Occured starting measurement: ' + str(err))
-            self.datalog.insert('end', 'An Exception Occured starting measurement: ' + str(err))
+            self.datalog.insert(
+                'end', 'An Exception Occured starting measurement: ' + str(err))
             self.datalog.see('end')
 
     # Calls updates after processing the queue, runs every 100 ms
@@ -528,7 +529,7 @@ class GUIBase(tk.Tk):  # Base GUI class with all features universal to code envi
             pass
 
 
-def animate_plot(i, ax, _graph, _results, progress_bar, time_var):  # animation function
+def animate_plot(i, ax, _graph, _results, progress_bar, time_var, animate_x2=False):  # animation function
     ax.clear()
     ax.grid(True)
     ax.set_title(_graph['graph_title'] + "\n" +
@@ -539,6 +540,9 @@ def animate_plot(i, ax, _graph, _results, progress_bar, time_var):  # animation 
     tmp_x = _results['x_data'][0:_results['counter'].value]
     ax.plot(tmp_x,
             _results['y_data'][0:len(tmp_x)], 'b-o', ms=10, mew=0.5)
+    if animate_x2:
+        ax.plot(tmp_x,
+                _results['x2_data'][0:len(tmp_x)], 'b-o', ms=10, mew=0.5)
     progress_bar['value'] = _results['progress'].value
     if _results['time'].value != 0 and _results['time'].value / 60 >= 1:
         time_var.set(
